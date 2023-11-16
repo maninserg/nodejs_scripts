@@ -3,7 +3,9 @@ const util = require('node:util');
 const exec = util.promisify(require('node:child_process').exec);
 
 // Source format of files mp4, mkv, m4v and etc
-const sourceFormat = 'mp4';
+const sourceFormat = 'ts';
+// Outputformat of files mp4, mkv, m4v and etc
+const outputFormat = 'mp4';
 // compression ratio = 1(original compression)...10(max compression)
 const compressRatio = 10;
 // 38040:2160(4k), 2560:1440(2k),
@@ -33,11 +35,12 @@ async function compressionFile(file, i, maxNumberArray) {
   if (file.name.endsWith(sourceFormat)) {
     const oldFileName = file.name.replaceAll(' ', '\\ ');
     const newFileName = file.name.replaceAll(' ', '_');
+    const newFileNameFormat = newFileName.replaceAll(sourceFormat, outputFormat);
     try {
       const startDateStamp = Date.now();
       printStartText(file.name, i, maxNumberArray);
       const { stdout, stderr } = await exec(
-        `ffmpeg -i ${oldFileName} -q:v ${compressRatio} -vf scale=${resolutionNewVideo} ./converted/${newFileName}`
+        `ffmpeg -i ${oldFileName} -q:v ${compressRatio} -vf scale=${resolutionNewVideo} ./converted/${newFileNameFormat}`
       );
       const finishDateStamp = Date.now();
       // console.log('stdout:', stdout);
